@@ -88,16 +88,16 @@ fun transformExpression(expression:List<String>):List<String>{
 }
 
 fun calculator(expression: List<String>):Int{
-    println(expression)
+    println(expression.joinToString(""))
     if(expression.size == 1) return expression[0].toInt()
     return calculator(transformExpression(expression))
 }
 
 
 fun main(args: Array<String>) {
-    val expression = "5 * 2 + ( ( 13 + 4 * 5 ) + 5 + ( 4 / 2 + 5 ) ) * 2 + 15".split(" ")
+    val expression = "5 * 2 + ( ( 13 + 4 * 5 ) + 5 + ( 4 / 2 + 5 ) ) ^ 2 + 15".split(" ")
     val expression2 = "2 ^ 2 + 2 ^ 2".split(" ")
-    println(calculator(expression2))
+    println(calculator(expression))
 }
 
 fun Int.pow(x: Int): Int = (2..x).fold(this) { r, _ -> r * this }
