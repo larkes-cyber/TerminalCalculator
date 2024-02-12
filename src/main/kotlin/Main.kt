@@ -1,3 +1,4 @@
+import kotlin.math.pow
 
 private fun transformSimpleExpression(expression: MutableList<String>, sign:String, index: Int):MutableList<String>{
 
@@ -5,12 +6,12 @@ private fun transformSimpleExpression(expression: MutableList<String>, sign:Stri
     val second = expression[index + 1]
     expression[index] = (
             when(sign){
-                "*" -> first.toInt() * second.toInt()
-                "/" -> first.toInt() / second.toInt()
-                "+" -> first.toInt() + second.toInt()
-                "-" -> first.toInt() - second.toInt()
-                "^" -> first.toInt().pow(second.toInt())
-                else -> first.toInt() + second.toInt()
+                "*" -> first.toFloat() * second.toFloat()
+                "/" -> first.toFloat() / second.toFloat()
+                "+" -> first.toFloat() + second.toFloat()
+                "-" -> first.toFloat() - second.toFloat()
+                "^" -> first.toFloat().pow(second.toFloat())
+                else -> first.toFloat() + second.toFloat()
             }
             ).toString()
     expression.removeAt(index - 1)
@@ -66,7 +67,11 @@ fun transformExpression(expression:List<String>):List<String>{
         for(sign in listOf("^", "*", "/", "+", "-")){
             workingArea.forEachIndexed {index, item ->
                 if(item == sign){
-                    simpleExpression = transformSimpleExpression(workingArea.toMutableList(), sign, index)
+                    simpleExpression = transformSimpleExpression(
+                       expression = workingArea.toMutableList(),
+                        sign = sign,
+                        index = index
+                    )
                     return@breaking
                 }
             }
@@ -87,17 +92,17 @@ fun transformExpression(expression:List<String>):List<String>{
 
 }
 
-fun calculator(expression: List<String>):Int{
+fun calculator(expression: List<String>):Float{
     println(expression.joinToString(""))
-    if(expression.size == 1) return expression[0].toInt()
+    if(expression.size == 1) return expression[0].toFloat()
     return calculator(transformExpression(expression))
 }
 
 
 fun main(args: Array<String>) {
-    val expression = "5 * 2 + ( ( 13 + 4 * 5 ) + 5 + ( 4 / 2 + 5 ) ) ^ 2 + 15".split(" ")
-    val expression2 = "2 ^ 2 + 2 ^ 2".split(" ")
-    println(calculator(expression))
+    val expression = "5.2 * 2.1 + ( ( 13.4 + 4.5 * 5.1 ) + 5.5 + ( 4 / 2 + 5 ) ) * 2.5 + 15".split(" ")
+    val expression2 = "5 ^ ( 1.5 + 1.5 ) * 2".split(" ")
+    calculator(expression)
 }
 
 fun Int.pow(x: Int): Int = (2..x).fold(this) { r, _ -> r * this }
