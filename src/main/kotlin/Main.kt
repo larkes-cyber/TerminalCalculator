@@ -64,12 +64,12 @@ fun transformExpression(expression:List<String>):List<String>{
     val workingArea = expression.slice(startDeepBracketIndex .. endDeepBracketIndex )
     var simpleExpression = workingArea
     run breaking@{
-        for(sign in listOf("^", "*", "/", "+", "-")){
+        for(sign in listOf(listOf("^"), listOf("*", "/"), listOf("+", "-"))){
             workingArea.forEachIndexed {index, item ->
-                if(item == sign){
+                if(sign.contains(item)){
                     simpleExpression = transformSimpleExpression(
                        expression = workingArea.toMutableList(),
-                        sign = sign,
+                        sign = item,
                         index = index
                     )
                     return@breaking
@@ -100,8 +100,8 @@ fun calculator(expression: List<String>):Float{
 
 
 fun main(args: Array<String>) {
-    val expression = "5.2 * 2.1 + ( ( 13.4 + 4.5 * 5.1 ) + 5.5 + ( 4 / 2 + 5 ) ) * 2.5 + 15".split(" ")
-    val expression2 = "5 ^ ( 1.5 + 1.5 ) * 2".split(" ")
+    val expression = "5 * 2 + ( ( 13 + 4 * 5 ) + 5 + ( 4 / 2 + 5 ) ) * 2 + 15".split(" ")
+    val expression2 = "2 / 2 * 5".split(" ")
     calculator(expression)
 }
 
