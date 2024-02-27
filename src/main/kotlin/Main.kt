@@ -1,3 +1,4 @@
+import java.util.Arrays
 import java.util.UUID
 import kotlin.math.cbrt
 import kotlin.math.pow
@@ -25,9 +26,9 @@ class Calculator{
 
         val first = expression[index - 1]
         val second = expression[index + 1]
-       // println(expression)
+        // println(expression)
 
-       // println("${expression[index - 1]} $sign ${expression[index - 1]}")
+        // println("${expression[index - 1]} $sign ${expression[index - 1]}")
 
         val result = (
                 when(sign){
@@ -150,20 +151,21 @@ class Calculator{
 
     fun findDependsNodesCount(nodeId:String, count:Int):Int{
         val node = nodes[nodeId]
-        println(node)
         if(node!!.second.isEmpty()) return 0
         if(
             nodes[node!!.second[0]]!!.second.isEmpty()
             && nodes[node.second[1]]!!.second.isEmpty()
-            ) return 2
+        ) return 2
         return count + 2 + findDependsNodesCount(node.second[0], count) + findDependsNodesCount(node.second[1], count)
     }
 
     private val visitedNodes = mutableListOf<String>()
+
+    var graph = mutableListOf<String>()
+
     fun buildGraph(nodeId:String, depth:Int){
 
         if(visitedNodes.size == nodes.size) return
-
         val node = nodes[nodeId]
         if(node!!.second.isEmpty()) {
             visitedNodes.add(nodeId)
@@ -178,52 +180,44 @@ class Calculator{
         val primeNode = if(firstSubNode!!.first.sign != null) firstSubNodeId else secondSubNodeId
         val notPrimeNode = if(firstSubNodeId != primeNode) firstSubNodeId else secondSubNodeId
 
+        var outStr = "|"
 
-        println("|")
-        println("——>${nodes[primeNode]!!.first.sign ?: nodes[primeNode]!!.first.item}")
-        for(i in 0 until findDependsNodesCount(primeNode, 0)){
-            println("|")
+        outStr += "\r——>${node.first.sign}"
+        if(firstSubNode.first.sign == null && secondSubNode?.first?.sign == null){
+            outStr += ("\r   |")
+            outStr += ("\r   ——>${nodes[primeNode]?.first?.item}")
+            outStr += ("\r   |")
+            outStr += ("\r   ——>${nodes[notPrimeNode]?.first?.item}")
+        }else{
+            for(i in 0 until findDependsNodesCount(primeNode, 0) * 3){
+                outStr += ("\r|")
+            }
+            outStr += ("\r——>${nodes[notPrimeNode]!!.first.sign ?: nodes[notPrimeNode]!!.first.item}")
         }
-        println("——>${nodes[notPrimeNode]!!.first.sign ?: nodes[notPrimeNode]!!.first.item}")
-
-
+        outStr += ""
+        graph += outStr
+        buildGraph(firstSubNodeId, 0)
+        buildGraph(secondSubNodeId, 0)
     }
 
 
 }
-
-
-
-
-
-
 
 fun main(args: Array<String>) {
-    val expression = "5 * 2 + ( ( 13 + 4 * 5 ) + 5 + ( 4 / 2 + 5 ) ) * 2 + 15".split(" ").map {
-        Node(item = it)
-    } //2 - 3 + 5 * ( 2 ^ 2 + 1 ) - 2
-    val expression2 = "2 - 3 + 5 * ( 2 / 2 + 4 ) + 5".split(" ").map {
-        Node(item = it)
-    }
+    val expression = "5 * 2 + ( ( 13 + 4 * 5 ) + 5 + ( 4 / 2 + 5 ) ) * 2 + 15".split(" ")
+    val expression2 = "4 - ( 15 + 3 * 2 ) * 2".split(" ")
     val calculator = Calculator()
-    calculator.calculate(expression2)
-   //
-    calculator.nodes.forEach { item ->
-        println("${item.key} ### ${item.value}")
-    }
+    calculator.calculate(expression2.map { Node(item = it) })
+    calculator.buildGraph(calculator.getStartNode(), 0)
 
-    val secondNode = calculator.nodes[calculator.getStartNode()]!!.second[0]
+    val tmp = calculator.graph.joinToString("").split("\r?\n|\r".toRegex()).toTypedArray()
+    println(calculator.graph)
 
-    println(calculator.findDependsNodesCount(secondNode, 0))
-    val graph = mapOf(
-        "A" to listOf("B", "C"),
-        "B" to listOf("D"),
-        "C" to listOf("E"),
-        "D" to emptyList(),
-        "E" to emptyList()
-    )
-
-
+//    calculator.graph.forEach {
+//        print(it)
+//        print(" ")
+//        print(" ")
+//        print(" ")
+//    }
 }
 
-fun Int.pow(x: Int): Int = (2..x).fold(this) { r, _ -> r * this }
